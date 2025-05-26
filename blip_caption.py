@@ -2,46 +2,45 @@ from PIL import Image
 from transformers import BlipProcessor, BlipForConditionalGeneration
 import torch
 
+class BlipCaptionService:
+    def __init__(self, device=None):
+        self.device = device or self.get_device()
+        print(f"Using device: {self.device}")
+        self.processor = BlipProcessor.from_pretrained("Salesforce/blip-image-captioning-base")
+        self.model = BlipForConditionalGeneration.from_pretrained("Salesforce/blip-image-captioning-base")
+        self.model.to(self.device)
 
-def get_device():
-    """Select the best available device (MPS if available, else CPU)."""
-    return "mps" if torch.backends.mps.is_available() else "cpu"
+    @staticmethod
+    def get_device():
+        """Select the best available device (MPS if available, else CPU)."""
+        return "mps" if torch.backends.mps.is_available() else "cpu"
 
+    @staticmethod
+    def load_image(image_path):
+        """Load and convert an image to RGB."""
+        image = Image.open(image_path).convert("RGB")
+        return image
 
-def load_model_and_processor(device):
-    """Load BLIP processor and model, move model to device."""
-    processor = BlipProcessor.from_pretrained("Salesforce/blip-image-captioning-base")
-    model = BlipForConditionalGeneration.from_pretrained("Salesforce/blip-image-captioning-base")
-    model.to(device)
-    return processor, model
+    def generate_caption(self, image):
+        """Generate a caption for a single PIL image."""
+        inputs = self.processor(images=image, return_tensors="pt")
+        inputs = {k: v.to(self.device) for k, v in inputs.items()}
+        with torch.no_grad():
+            out = self.model.generate(**inputs)
+        caption = self.processor.decode(out[0], skip_special_tokens=True)
+        return caption
 
-
-def load_image(image_path):
-    """Load and convert an image to RGB."""
-    image = Image.open(image_path).convert("RGB")
-    return image
-
-
-def generate_caption(image, processor, model, device):
-    """Generate a caption for a single image."""
-    inputs = processor(images=image, return_tensors="pt")
-    inputs = {k: v.to(device) for k, v in inputs.items()}
-    with torch.no_grad():
-        out = model.generate(**inputs)
-    caption = processor.decode(out[0], skip_special_tokens=True)
-    return caption
-
+    def caption_image_path(self, image_path, show=False):
+        image = self.load_image(image_path)
+        if show:
+            image.show()
+        return self.generate_caption(image)
 
 def main():
-    device = get_device()
-    print(f"Using device: {device}")
-    processor, model = load_model_and_processor(device)
+    service = BlipCaptionService()
     image_path = "test.jpg"  # Placeholder for future CLI argument
-    image = load_image(image_path)
-    image.show()  # Optional: visually confirm the image
-    caption = generate_caption(image, processor, model, device)
+    caption = service.caption_image_path(image_path, show=True)
     print(f"\nGenerated caption: {caption}\n")
-
 
 if __name__ == "__main__":
     main()
