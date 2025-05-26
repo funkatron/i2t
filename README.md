@@ -13,6 +13,7 @@ i2t is a simple CLI tool and Python module for generating descriptive captions f
 - **Output formats: plain text, JSON**
 - **Pre-caching for offline/production use**
 - **Apple Silicon (MPS) and CUDA support**
+- **Gradio demo app (`src/i2t/gradio_app.py`)**
 
 ## Installation
 
@@ -75,12 +76,22 @@ caption = service.caption_image_path('path/to/image.jpg')
 print(caption)
 ```
 
+### Gradio Demo App
+
+Launch the Gradio demo app with:
+
+```sh
+python -m i2t.gradio_app
+```
+
+This will open a web UI for uploading an image and selecting a model (BLIP or JoyCaption) to generate a caption.
+
 ## Model Options
 - `blip`: [Salesforce/blip-image-captioning-base](https://huggingface.co/Salesforce/blip-image-captioning-base)
 - `joy`: [fancyfeast/llama-joycaption-beta-one-hf-llava](https://huggingface.co/fancyfeast/llama-joycaption-beta-one-hf-llava)
 
 ## Requirements
-- Python 3.8+
+- Python 3.11+
 - torch >= 2.3.0 (for MPS/Apple Silicon support)
 - transformers >= 4.45
 - Pillow
