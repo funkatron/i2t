@@ -1,0 +1,11 @@
+venv-blip/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.swp
+*.swo
+*.egg-info/
+.env
+.DS_Store
+.ipynb_checkpoints/
