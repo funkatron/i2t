@@ -112,17 +112,17 @@ class JoyCaptionService(BaseCaptionService):
             logger.setLevel(logging.INFO)
         with suppress_output(quiet):
             logger.info("Caching JoyCaption model and processor...")
-            AutoProcessor.from_pretrained("fancyfeast/llama-joycaption-beta-one-hf-llava", use_fast=True)
+            AutoProcessor.from_pretrained("fancyfeast/llama-joycaption-beta-one-hf-llava", use_fast=False)
             AutoModelForVision2Seq.from_pretrained("fancyfeast/llama-joycaption-beta-one-hf-llava")
             logger.info("Caching complete.")
-
+    
     def load_model_and_processor(self):
         try:
             self.processor = AutoProcessor.from_pretrained(
                 self.MODEL_ID,
                 local_files_only=False,
                 revision="main",
-                use_fast=True
+                use_fast=False
             )
             self.model = AutoModelForVision2Seq.from_pretrained(
                 self.MODEL_ID,

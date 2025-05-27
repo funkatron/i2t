@@ -1,0 +1,52 @@
+[project]
+name = "i2t"
+version = "0.1.0"
+description = "A simple image-to-text cli tool."
+readme = "README.md"
+requires-python = ">=3.11,<3.12"
+license = { text = "MIT" }
+authors = [
+    { name = "Ed Finkler", email = "coj@funkatron.com" }
+]
+dependencies = [
+    "numpy>=1.26,<2.0",
+    "torch==2.7.0",
+    "torchaudio==2.7.0",
+    "torchvision",
+    "transformers>=4.40,<4.41",
+    "tokenizers",
+    "Pillow>=11.2,<12.0",
+    "huggingface-hub>=0.32,<0.33",
+    "hf-xet==1.1.2",
+    "safetensors>=0.5,<0.6",
+    "fsspec>=2025.5,<2025.6",
+    "filelock>=3.18,<4.0",
+    "PyYAML>=6.0,<7.0",
+    "colorama>=0.4,<1.0",
+    "termcolor>=2.3,<3.0",
+    "yaspin>=3.1,<4.0",
+    "tqdm>=4.67,<5.0",
+    "requests>=2.32,<2.33",
+    "urllib3>=2.4,<3.0",
+    "certifi>=2025.4.26",
+    "charset-normalizer>=3.4,<4.0",
+    "idna>=3.10,<4.0",
+    "sympy>=1.14,<2.0",
+    "mpmath>=1.3,<2.0",
+    "networkx>=3.4,<4.0",
+    "setuptools>=69.0.0",
+    "packaging>=25.0,<26.0",
+    "typing_extensions>=4.13,<5.0",
+    "Jinja2>=3.1.6",
+    "MarkupSafe>=3.0.2",
+    "regex>=2024.11,<2025.0",
+    "uv"
+]
+
+[project.scripts]
+i2t = "i2t.cli:main"
+
+[build-system]
+requires = ["setuptools>=69.0.0", "wheel"]
+build-backend = "setuptools.build_meta"
+

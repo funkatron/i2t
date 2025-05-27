@@ -11,7 +11,7 @@ SUPPORTED_EXTENSIONS = ('.jpg', '.jpeg', '.png', '.bmp', '.gif', '.tiff', '.webp
 def main():
     parser = argparse.ArgumentParser(description="Image-to-Text Captioning (i2t)")
     parser.add_argument("image", nargs="?", help="Path to the image file")
-    parser.add_argument("--model", choices=["blip", "joy"], default="joy", help="Which model to use: blip or joy (default: joy)")
+    parser.add_argument("--model", choices=["blip", "joy"], default="blip", help="Which model to use: blip or joy (default: blip)")
     parser.add_argument("--show", action="store_true", help="Show the image before captioning")
     parser.add_argument("--precache", action="store_true", help="Download and cache the selected model, then exit")
     parser.add_argument("--format", choices=["text", "json"], default="text", help="Output format (default: text)")
@@ -41,10 +41,20 @@ def main():
         if not image_paths:
             print(f"No supported images found in directory: {args.batch_dir}")
             return
-        if args.model == "blip":
-            service = BlipCaptionService(quiet=quiet)
-        else:
-            service = JoyCaptionService(quiet=quiet)
+        try:
+            if args.model == "blip":
+                service = BlipCaptionService(quiet=quiet)
+            else:
+                try:
+                    service = JoyCaptionService(quiet=quiet)
+                except Exception as e:
+                    if not quiet:
+                        print(f"Failed to load JoyCaption model: {e}. Falling back to BLIP.")
+                    service = BlipCaptionService(quiet=quiet)
+                    args.model = "blip"  # Update model name for output
+        except Exception as e:
+            print(f"Failed to initialize image captioning service: {e}")
+            return 1
         results = []
         for img_path in image_paths:
             caption = service.caption_image_path(img_path, show=args.show)
@@ -60,10 +70,20 @@ def main():
     if not args.image:
         parser.error("the following arguments are required: image (unless using --precache or --batch-dir)")
 
-    if args.model == "blip":
-        service = BlipCaptionService(quiet=quiet)
-    else:
-        service = JoyCaptionService(quiet=quiet)
+    try:
+        if args.model == "blip":
+            service = BlipCaptionService(quiet=quiet)
+        else:
+            try:
+                service = JoyCaptionService(quiet=quiet)
+            except Exception as e:
+                if not quiet:
+                    print(f"Failed to load JoyCaption model: {e}. Falling back to BLIP.")
+                service = BlipCaptionService(quiet=quiet)
+                args.model = "blip"  # Update model name for output
+    except Exception as e:
+        print(f"Failed to initialize image captioning service: {e}")
+        return 1
 
     caption = service.caption_image_path(args.image, show=args.show)
     if args.format == "json":

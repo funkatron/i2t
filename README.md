@@ -2,31 +2,46 @@
 
 ## Description
 
-i2t is a simple CLI tool and Python module for generating descriptive captions for images using state-of-the-art models (BLIP and JoyCaption/LLaVA) locally on MacOS running on ARM64/Apple Silicon chips.
+`i2t` is a simple CLI tool and Python module for generating descriptive captions for images using models like BLIP and JoyCaption/LLaVA locally on **MacOS** running on ARM64/Apple Silicon chips.
 
 
 ## Features
+- **Image captioning**: Generate descriptive, accurate captions for images using advanced models running locally **on your Mac**.
+  - While this tool is primarily designed for MacOS, it will check for CUDA support, so may also run on Linux with CUDA support or Windows with WSL2 and CUDA.
 - **BLIP and JoyCaption (LLaVA) model support**
-- **Modern src/ package structure**
-- **Command-line interface (`i2t`)**
+  - Automatically installed on first run from HuggingFace.
+- **A Simple Command-line interface (`i2t`)**
 - **Quiet mode for scripting/automation**
 - **Output formats: plain text, JSON**
-- **Pre-caching for offline/production use**
-- **Apple Silicon (MPS) and CUDA support**
-- **Gradio demo app (`src/i2t/gradio_app.py`)**
+- **Pre-caching of models for offline/production use**
+
+## Requirements
+- MacOS 14.6+ with ARM64/Apple Silicon
+  - As of this writing, testing has been limited to an M2 Ultra-based Mac Studio running MacOS 14.06 🤷‍♀️.
+- Python 3.11+
 
 ## Installation
 
-1. Clone the repo and install in editable mode:
+1. Clone the repo:
    ```sh
-   git clone <your-repo-url>
-   cd blip-mps
-   pip install -e .
+   git clone https://github.com/funkatron/i2t.git
+   cd i2t
    ```
-2. (Recommended) Set up a virtual environment:
+2. Set up a virtual environment:
    ```sh
-   python -m venv venv-blip
-   source venv-blip/bin/activate
+   python3.11 -m venv venv
+   source venv/bin/activate
+   pip install uv
+   ```
+3. Install dependencies:
+   ```sh
+   # note that we use uv for speed and better dependency management, but
+   # you can also use `pip` directly if you prefer
+   uv pip install -r pyproject.toml
+   ```
+4. Install the package in editable mode:
+   ```sh
+   uv pip install -e .
    ```
 
 ## Usage
@@ -76,30 +91,33 @@ caption = service.caption_image_path('path/to/image.jpg')
 print(caption)
 ```
 
-### Gradio Demo App
-
-Launch the Gradio demo app with:
-
-```sh
-python -m i2t.gradio_app
-```
-
-This will open a web UI for uploading an image and selecting a model (BLIP or JoyCaption) to generate a caption.
-
 ## Model Options
+- `joy` (default): [fancyfeast/llama-joycaption-beta-one-hf-llava](https://huggingface.co/fancyfeast/llama-joycaption-beta-one-hf-llava)
 - `blip`: [Salesforce/blip-image-captioning-base](https://huggingface.co/Salesforce/blip-image-captioning-base)
-- `joy`: [fancyfeast/llama-joycaption-beta-one-hf-llava](https://huggingface.co/fancyfeast/llama-joycaption-beta-one-hf-llava)
 
-## Requirements
-- Python 3.11+
-- torch >= 2.3.0 (for MPS/Apple Silicon support)
-- transformers >= 4.45
-- Pillow
 
 ## Notes
 - Models are cached in the HuggingFace cache directory (`~/.cache/huggingface/hub` by default).
 - Use `--precache` to download models in advance for offline/production use.
 - Quiet mode (`--format json`) suppresses all extra output except the requested format.
+- This project uses NumPy 1.26.4 for compatibility with PyTorch and other dependencies.
+- BLIP is the default and most reliable model. JoyCaption is experimental and may not work on all setups.
+
+## Troubleshooting
+
+If you encounter NumPy compatibility errors:
+1. Ensure you have NumPy 1.x installed (this project uses 1.26.4)
+2. If upgrading from NumPy 2.x, you may need to recreate your virtual environment:
+   ```sh
+   deactivate
+   rm -rf venv
+   python3.11 -m venv venv
+   source venv/bin/activate
+   pip install --upgrade pip
+   pip install numpy==1.26.4
+   pip install -r pyproject.toml
+   pip install -e .
+   ```
 
 ## License
 MIT
