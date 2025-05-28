@@ -11,3 +11,6 @@ __pycache__/
 venv/
 venv-blip/
 .ipynb_checkpoints/
+
+# Ignore JetBrains IDE config
+.idea/

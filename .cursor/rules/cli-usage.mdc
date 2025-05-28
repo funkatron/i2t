@@ -3,3 +3,16 @@ description:
 globs:
 alwaysApply: false
 ---
+# CLI Usage Guide
+
+The main CLI entry point is [cli.py](mdc:src/i2t/cli.py). It supports the following arguments:
+
+- `image`: Path to the image file (required unless using batch or precache)
+- `--model`: Choose between `blip` (default) and `blip-large`
+- `--show`: Display the image before captioning
+- `--precache`: Download/cache the selected model, then exit
+- `--format`: Output format (`text` or `json`)
+- `--batch-dir`: Directory for batch image processing
+- `--prompt-prefix`: Custom prompt for conditional captioning
+
+See [README.md](mdc:README.md) for example usage and more details.

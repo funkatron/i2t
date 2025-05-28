@@ -57,13 +57,15 @@ else
     echo "Keeping existing virtual environment. Continuing with setup..."
 fi
 
-# Activate the virtual environment
-if [ -f "$VENV_DIR/bin/activate" ]; then
+# Always activate the venv if not already active
+if [ -z "$VIRTUAL_ENV" ]; then
+  if [ -f "$VENV_DIR/bin/activate" ]; then
     echo "Activating virtual environment..."
     source "$VENV_DIR/bin/activate"
-else
-    echo "Error: Virtual environment not found. Please check the setup."
+  else
+    echo "Virtual environment not found! Please run python3 -m venv .venv first."
     exit 1
+  fi
 fi
 
 # Install NumPy 1.26.4 first (critical for compatibility)

@@ -3,3 +3,12 @@ description:
 globs:
 alwaysApply: false
 ---
+# Captioning Services
+
+The core captioning logic is in [service.py](mdc:src/i2t/service.py):
+
+- `BaseCaptionService`: Abstract base class for captioning services.
+- `BlipCaptionService`: Uses the BLIP base model for image captioning.
+- `BlipLargeCaptionService`: Uses the BLIP-Large model for more accurate captions.
+
+Each service can be used via the CLI or as a Python module. Only BLIP and BLIP-Large are supported.

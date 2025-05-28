@@ -3,3 +3,14 @@ description:
 globs:
 alwaysApply: false
 ---
+# Project Structure Guide
+
+This project is an image captioning tool for MacOS/Apple Silicon, supporting BLIP and BLIP-Large models. The main components are:
+
+- **CLI entry point:** [cli.py](mdc:src/i2t/cli.py) — Handles command-line arguments, batch processing, and model selection.
+- **Captioning services:** [service.py](mdc:src/i2t/service.py) — Contains `BlipCaptionService` and `BlipLargeCaptionService` for generating captions using BLIP models.
+- **(Optional) Gradio UI:** [gradio_app.py](mdc:src/i2t/gradio_app.py) — (Deprecated) Provided a web UI for captioning, but references to unsupported models may remain.
+- **Metadata and packaging:** [i2t.egg-info](mdc:src/i2t.egg-info/) — Contains package metadata.
+- **Documentation:** [README.md](mdc:README.md) — Usage, installation, and troubleshooting instructions.
+
+> Only BLIP and BLIP-Large models are currently supported. JoyCaption is no longer available.
