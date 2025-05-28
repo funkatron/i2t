@@ -4,6 +4,7 @@ warnings.filterwarnings("ignore")
 import argparse
 import os
 from .service import BlipCaptionService, JoyCaptionService
+from .service import BlipLargeCaptionService
 from glob import glob
 
 SUPPORTED_EXTENSIONS = ('.jpg', '.jpeg', '.png', '.bmp', '.gif', '.tiff', '.webp')
@@ -11,7 +12,7 @@ SUPPORTED_EXTENSIONS = ('.jpg', '.jpeg', '.png', '.bmp', '.gif', '.tiff', '.webp
 def main():
     parser = argparse.ArgumentParser(description="Image-to-Text Captioning (i2t)")
     parser.add_argument("image", nargs="?", help="Path to the image file")
-    parser.add_argument("--model", choices=["blip", "joy"], default="blip", help="Which model to use: blip or joy (default: blip)")
+    parser.add_argument("--model", choices=["blip", "blip-large", "joy"], default="blip", help="Which model to use: blip, blip-large, or joy (default: blip)")
     parser.add_argument("--show", action="store_true", help="Show the image before captioning")
     parser.add_argument("--precache", action="store_true", help="Download and cache the selected model, then exit")
     parser.add_argument("--format", choices=["text", "json"], default="text", help="Output format (default: text)")
@@ -28,6 +29,8 @@ def main():
     if args.precache:
         if args.model == "blip":
             BlipCaptionService.precache(quiet=quiet)
+        elif args.model == "blip-large":
+            BlipLargeCaptionService.precache(quiet=quiet)
         else:
             JoyCaptionService.precache(quiet=quiet)
         return
@@ -44,6 +47,8 @@ def main():
         try:
             if args.model == "blip":
                 service = BlipCaptionService(quiet=quiet)
+            elif args.model == "blip-large":
+                service = BlipLargeCaptionService(quiet=quiet)
             else:
                 try:
                     service = JoyCaptionService(quiet=quiet)
@@ -73,6 +78,8 @@ def main():
     try:
         if args.model == "blip":
             service = BlipCaptionService(quiet=quiet)
+        elif args.model == "blip-large":
+            service = BlipLargeCaptionService(quiet=quiet)
         else:
             try:
                 service = JoyCaptionService(quiet=quiet)

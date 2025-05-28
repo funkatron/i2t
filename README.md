@@ -59,9 +59,11 @@ i2t --help
 i2t path/to/image.jpg
 ```
 
-#### Generate a caption (BLIP or JoyCaption):
+#### Generate a caption (BLIP, BLIP-Large, or JoyCaption):
 ```sh
 i2t path/to/image.jpg --model blip
+# or
+i2t path/to/image.jpg --model blip-large
 # or
 i2t path/to/image.jpg --model joy
 ```
@@ -92,8 +94,9 @@ print(caption)
 ```
 
 ## Model Options
-- `joy` (default): [fancyfeast/llama-joycaption-beta-one-hf-llava](https://huggingface.co/fancyfeast/llama-joycaption-beta-one-hf-llava)
-- `blip`: [Salesforce/blip-image-captioning-base](https://huggingface.co/Salesforce/blip-image-captioning-base)
+- `blip` (default): [Salesforce/blip-image-captioning-base](https://huggingface.co/Salesforce/blip-image-captioning-base)
+- `blip-large`: [Salesforce/blip-image-captioning-large](https://huggingface.co/Salesforce/blip-image-captioning-large) (more accurate, uses more RAM/VRAM)
+- `joy`: [fancyfeast/llama-joycaption-beta-one-hf-llava](https://huggingface.co/fancyfeast/llama-joycaption-beta-one-hf-llava)
 
 
 ## Notes
@@ -102,6 +105,7 @@ print(caption)
 - Quiet mode (`--format json`) suppresses all extra output except the requested format.
 - This project uses NumPy 1.26.4 for compatibility with PyTorch and other dependencies.
 - BLIP is the default and most reliable model. JoyCaption is experimental and may not work on all setups.
+- **Known Issue:** As of the latest test, the JoyCaption model does not work due to a `not a string` error from HuggingFace's model/tokenizer loading. This appears to be an upstream model or config issue, not a bug in this codebase. All JoyCaption invocations will fall back to BLIP or print an error.
 
 ## Troubleshooting
 

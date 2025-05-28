@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
 from PIL import Image
 from transformers import BlipProcessor, BlipForConditionalGeneration, AutoProcessor, AutoModelForVision2Seq
+from transformers import LlavaForConditionalGeneration
 import torch
 import sys
 import os
@@ -100,6 +101,32 @@ class BlipCaptionService(BaseCaptionService):
             out = self.model.generate(**inputs)
         return self.processor.decode(out[0], skip_special_tokens=True)
 
+class BlipLargeCaptionService(BaseCaptionService):
+    @classmethod
+    def precache(cls, quiet=False):
+        if quiet:
+            logger.setLevel(logging.WARNING)
+        else:
+            logger.setLevel(logging.INFO)
+        with suppress_output(quiet):
+            logger.info("Caching BLIP-Large model and processor...")
+            BlipProcessor.from_pretrained("Salesforce/blip-image-captioning-large")
+            BlipForConditionalGeneration.from_pretrained("Salesforce/blip-image-captioning-large")
+            logger.info("Caching complete.")
+
+    def load_model_and_processor(self):
+        self.processor = BlipProcessor.from_pretrained("Salesforce/blip-image-captioning-large")
+        self.model = BlipForConditionalGeneration.from_pretrained("Salesforce/blip-image-captioning-large")
+        self.model.to(self.device)
+
+    def generate_caption(self, image):
+        """Generate a caption for a single PIL image."""
+        inputs = self.processor(images=image, return_tensors="pt")
+        inputs = {k: v.to(self.device) for k, v in inputs.items()}
+        with torch.no_grad():
+            out = self.model.generate(**inputs)
+        return self.processor.decode(out[0], skip_special_tokens=True)
+
 class JoyCaptionService(BaseCaptionService):
     MODEL_ID = "fancyfeast/llama-joycaption-beta-one-hf-llava"
     PROMPT = "Write a long descriptive caption for this image in a formal tone."
@@ -119,7 +146,7 @@ class JoyCaptionService(BaseCaptionService):
                     local_files_only=False,
                     revision="main"
                 )
-                AutoModelForVision2Seq.from_pretrained(
+                LlavaForConditionalGeneration.from_pretrained(
                     "fancyfeast/llama-joycaption-beta-one-hf-llava",
                     local_files_only=False,
                     revision="main"
@@ -138,7 +165,7 @@ class JoyCaptionService(BaseCaptionService):
                 revision="main",
                 use_fast=False
             )
-            self.model = AutoModelForVision2Seq.from_pretrained(
+            self.model = LlavaForConditionalGeneration.from_pretrained(
                 self.MODEL_ID,
                 torch_dtype=torch.float32,
                 device_map=None,
