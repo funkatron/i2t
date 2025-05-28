@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # setup_env.sh - Creates a clean environment for i2t
 
 SCRIPT_DIR=$(dirname "$(realpath "$0")")
@@ -39,22 +39,21 @@ fi
 # prompt user for confirmation to clear existing virtual environment. If not, keeo the existing one
 # and continue with the setup
 VENV_DIR="$SCRIPT_DIR/.venv"
-read -p "Do you want to clear the existing virtual environment? (y/n): " clear_venv_confirm
 
-if [[ "$clear_venv_confirm" = "y" || "$clear_venv_confirm" = "Y" ]]; then
-    echo "Clearing existing virtual environment at $VENV_DIR..."
-    if [ -d "$VENV_DIR" ]; then
+if [ -d "$VENV_DIR" ]; then
+    read -p "Do you want to clear the existing virtual environment? (y/n): " clear_venv_confirm
+    if [[ "$clear_venv_confirm" = "y" || "$clear_venv_confirm" = "Y" ]]; then
+        echo "Clearing existing virtual environment at $VENV_DIR..."
         rm -rf "$VENV_DIR"
         echo "Existing virtual environment cleared."
+        echo "Creating a new virtual environment at $VENV_DIR"
+        uv venv "$VENV_DIR" --prompt "i2t-venv"
     else
-        echo "No existing virtual environment found."
+        echo "Keeping existing virtual environment. Continuing with setup..."
     fi
-
-    # Create a new virtual environment
-    echo "Creating a new virtual environment at $VENV_DIR"
-    uv venv "$VENV_DIR" --prompt "i2t-venv"
 else
-    echo "Keeping existing virtual environment. Continuing with setup..."
+    echo "No existing virtual environment found. Creating a new one at $VENV_DIR."
+    uv venv "$VENV_DIR" --prompt "i2t-venv"
 fi
 
 # Always activate the venv if not already active
@@ -88,5 +87,16 @@ else
     exit 1
 fi
 
-echo "Try the BLIP model first (more reliable):"
-echo "  i2t ./test.jpg --model blip"
+
+# Note: This activation won't persist in the parent shell that called this script
+# The user will need to manually activate the venv after this script finishes
+echo "NOTE: You'll need to activate the virtual environment in your shell:"
+echo "    source $VENV_DIR/bin/activate"
+
+echo "You can now run 'i2t --help' to see the available options."
+
+echo "Try it out:"
+echo "  i2t ./test.jpg"
+echo "  i2t ./test.jpg --model blip-large"
+echo "  i2t ./test.jpg --model blip-large --format json --prompt-prefix 'A beautiful watercolor painting of'"
+

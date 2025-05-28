@@ -2,13 +2,13 @@
 
 ## Description
 
-`i2t` is a simple CLI tool and Python module for generating descriptive captions for images using models like BLIP and JoyCaption/LLaVA locally on **MacOS** running on ARM64/Apple Silicon chips.
+`i2t` is a simple CLI tool and Python module for generating descriptive captions for images using BLIP models locally on **MacOS** running on ARM64/Apple Silicon chips.
 
 
 ## Features
-- **Image captioning**: Generate descriptive, accurate captions for images using advanced models running locally **on your Mac**.
+- **Image captioning**: Generate descriptive, accurate captions for images using advanced BLIP models running locally **on your Mac**.
   - While this tool is primarily designed for MacOS, it will check for CUDA support, so may also run on Linux with CUDA support or Windows with WSL2 and CUDA.
-- **BLIP and JoyCaption (LLaVA) model support**
+- **BLIP and BLIP-Large model support**
   - Automatically installed on first run from HuggingFace.
 - **A Simple Command-line interface (`i2t`)**
 - **Quiet mode for scripting/automation**
@@ -27,12 +27,11 @@
    git clone https://github.com/funkatron/i2t.git
    cd i2t
    ```
-2. Set up a virtual environment:
+2. Run the handy dandy setup script:
    ```sh
-   python3.11 -m venv venv
-   source venv/bin/activate
-   pip install uv
+   ./setup_env.sh
    ```
+
 3. Install dependencies:
    ```sh
    # note that we use uv for speed and better dependency management, but
@@ -73,12 +72,14 @@ i2t path/to/image.jpg --model blip --prompt-prefix "A beautiful photograph of"
 
 #### Output as JSON (quiet mode):
 ```sh
-i2t path/to/image.jpg --model joy --format json
+i2t path/to/image.jpg --model blip --format json
 ```
 
 #### Pre-cache models for offline use:
 ```sh
-i2t --model joy --precache
+i2t --model blip --precache
+# or
+i2t --model blip-large --precache
 ```
 
 #### Show the image before captioning:
@@ -89,9 +90,9 @@ i2t path/to/image.jpg --show
 ### Python API
 
 ```python
-from i2t.service import BlipCaptionService, JoyCaptionService
+from i2t.service import BlipCaptionService, BlipLargeCaptionService
 
-service = BlipCaptionService()  # or JoyCaptionService()
+service = BlipCaptionService()  # or BlipLargeCaptionService()
 caption = service.caption_image_path('path/to/image.jpg')
 print(caption)
 ```
@@ -107,23 +108,8 @@ print(caption)
 - Quiet mode (`--format json`) suppresses all extra output except the requested format.
 - This project uses NumPy 1.26.4 for compatibility with PyTorch and other dependencies.
 - BLIP is the default and most reliable model.
-- **Known Issue:** JoyCaption is no longer supported in this version; only BLIP and BLIP-Large are available.
+- **Only BLIP and BLIP-Large models are supported in this version.**
 
-## Troubleshooting
-
-If you encounter NumPy compatibility errors:
-1. Ensure you have NumPy 1.x installed (this project uses 1.26.4)
-2. If upgrading from NumPy 2.x, you may need to recreate your virtual environment:
-   ```sh
-   deactivate
-   rm -rf venv
-   python3.11 -m venv venv
-   source venv/bin/activate
-   pip install --upgrade pip
-   pip install numpy==1.26.4
-   pip install -r pyproject.toml
-   pip install -e .
-   ```
 
 ## License
 MIT
