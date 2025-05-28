@@ -3,8 +3,7 @@ warnings.filterwarnings("ignore")
 
 import argparse
 import os
-from .service import BlipCaptionService, JoyCaptionService
-from .service import BlipLargeCaptionService
+from .service import BlipCaptionService, BlipLargeCaptionService
 from glob import glob
 
 SUPPORTED_EXTENSIONS = ('.jpg', '.jpeg', '.png', '.bmp', '.gif', '.tiff', '.webp')
@@ -12,7 +11,7 @@ SUPPORTED_EXTENSIONS = ('.jpg', '.jpeg', '.png', '.bmp', '.gif', '.tiff', '.webp
 def main():
     parser = argparse.ArgumentParser(description="Image-to-Text Captioning (i2t)")
     parser.add_argument("image", nargs="?", help="Path to the image file")
-    parser.add_argument("--model", choices=["blip", "blip-large", "joy"], default="blip", help="Which model to use: blip, blip-large, or joy (default: blip)")
+    parser.add_argument("--model", choices=["blip", "blip-large"], default="blip", help="Which model to use: blip or blip-large (default: blip)")
     parser.add_argument("--show", action="store_true", help="Show the image before captioning")
     parser.add_argument("--precache", action="store_true", help="Download and cache the selected model, then exit")
     parser.add_argument("--format", choices=["text", "json"], default="text", help="Output format (default: text)")
@@ -31,8 +30,6 @@ def main():
             BlipCaptionService.precache(quiet=quiet)
         elif args.model == "blip-large":
             BlipLargeCaptionService.precache(quiet=quiet)
-        else:
-            JoyCaptionService.precache(quiet=quiet)
         return
 
     if args.batch_dir:
@@ -49,14 +46,6 @@ def main():
                 service = BlipCaptionService(quiet=quiet)
             elif args.model == "blip-large":
                 service = BlipLargeCaptionService(quiet=quiet)
-            else:
-                try:
-                    service = JoyCaptionService(quiet=quiet)
-                except Exception as e:
-                    if not quiet:
-                        print(f"Failed to load JoyCaption model: {e}. Falling back to BLIP.")
-                    service = BlipCaptionService(quiet=quiet)
-                    args.model = "blip"  # Update model name for output
         except Exception as e:
             print(f"Failed to initialize image captioning service: {e}")
             return 1
@@ -80,14 +69,6 @@ def main():
             service = BlipCaptionService(quiet=quiet)
         elif args.model == "blip-large":
             service = BlipLargeCaptionService(quiet=quiet)
-        else:
-            try:
-                service = JoyCaptionService(quiet=quiet)
-            except Exception as e:
-                if not quiet:
-                    print(f"Failed to load JoyCaption model: {e}. Falling back to BLIP.")
-                service = BlipCaptionService(quiet=quiet)
-                args.model = "blip"  # Update model name for output
     except Exception as e:
         print(f"Failed to initialize image captioning service: {e}")
         return 1
