@@ -76,6 +76,7 @@ class BaseCaptionService(ABC):
             return self.generate_caption(image)
 
 class BlipCaptionService(BaseCaptionService):
+    DEFAULT_PROMPT = "Describe this image in vivid, natural language, mentioning important details, actions, and the overall mood."
     @classmethod
     def precache(cls, quiet=False):
         if quiet:
@@ -98,10 +99,11 @@ class BlipCaptionService(BaseCaptionService):
         inputs = self.processor(images=image, return_tensors="pt")
         inputs = {k: v.to(self.device) for k, v in inputs.items()}
         with torch.no_grad():
-            out = self.model.generate(**inputs)
+            out = self.model.generate(**inputs, max_new_tokens=512)
         return self.processor.decode(out[0], skip_special_tokens=True)
 
 class BlipLargeCaptionService(BaseCaptionService):
+    DEFAULT_PROMPT = "Describe this image in vivid, natural language, mentioning important details, actions, and the overall mood."
     @classmethod
     def precache(cls, quiet=False):
         if quiet:
@@ -124,5 +126,5 @@ class BlipLargeCaptionService(BaseCaptionService):
         inputs = self.processor(images=image, return_tensors="pt")
         inputs = {k: v.to(self.device) for k, v in inputs.items()}
         with torch.no_grad():
-            out = self.model.generate(**inputs)
+            out = self.model.generate(**inputs, max_new_tokens=512)
         return self.processor.decode(out[0], skip_special_tokens=True)
