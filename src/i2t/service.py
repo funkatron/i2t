@@ -65,15 +65,15 @@ class BaseCaptionService(ABC):
         pass
 
     @abstractmethod
-    def generate_caption(self, image):
+    def generate_caption(self, image, prompt=None):
         pass
 
-    def caption_image_path(self, image_path, show=False):
+    def caption_image_path(self, image_path, show=False, prompt=None):
         image = self.load_image(image_path)
         if show and not self.quiet:
             image.show()
         with suppress_output(self.quiet):
-            return self.generate_caption(image)
+            return self.generate_caption(image, prompt=prompt)
 
 class BlipCaptionService(BaseCaptionService):
     DEFAULT_PROMPT = "Describe this image in vivid, natural language, mentioning important details, actions, and the overall mood."
@@ -94,9 +94,12 @@ class BlipCaptionService(BaseCaptionService):
         self.model = BlipForConditionalGeneration.from_pretrained("Salesforce/blip-image-captioning-base")
         self.model.to(self.device)
 
-    def generate_caption(self, image):
+    def generate_caption(self, image, prompt=None):
         """Generate a caption for a single PIL image."""
-        inputs = self.processor(images=image, return_tensors="pt")
+        if prompt:
+            inputs = self.processor(images=image, text=prompt, return_tensors="pt")
+        else:
+            inputs = self.processor(images=image, return_tensors="pt")
         inputs = {k: v.to(self.device) for k, v in inputs.items()}
         with torch.no_grad():
             out = self.model.generate(**inputs, max_new_tokens=512)
@@ -121,9 +124,12 @@ class BlipLargeCaptionService(BaseCaptionService):
         self.model = BlipForConditionalGeneration.from_pretrained("Salesforce/blip-image-captioning-large")
         self.model.to(self.device)
 
-    def generate_caption(self, image):
+    def generate_caption(self, image, prompt=None):
         """Generate a caption for a single PIL image."""
-        inputs = self.processor(images=image, return_tensors="pt")
+        if prompt:
+            inputs = self.processor(images=image, text=prompt, return_tensors="pt")
+        else:
+            inputs = self.processor(images=image, return_tensors="pt")
         inputs = {k: v.to(self.device) for k, v in inputs.items()}
         with torch.no_grad():
             out = self.model.generate(**inputs, max_new_tokens=512)

@@ -68,6 +68,11 @@ i2t path/to/image.jpg --model blip-large
 i2t path/to/image.jpg --model joy
 ```
 
+#### Generate a caption with a custom prompt prefix (BLIP/BLIP-Large):
+```sh
+i2t path/to/image.jpg --model blip --prompt-prefix "A beautiful photograph of"
+```
+
 #### Output as JSON (quiet mode):
 ```sh
 i2t path/to/image.jpg --model joy --format json

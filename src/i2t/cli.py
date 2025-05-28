@@ -16,6 +16,7 @@ def main():
     parser.add_argument("--precache", action="store_true", help="Download and cache the selected model, then exit")
     parser.add_argument("--format", choices=["text", "json"], default="text", help="Output format (default: text)")
     parser.add_argument("--batch-dir", help="Directory containing images to process in batch mode")
+    parser.add_argument("--prompt-prefix", type=str, default=None, help="Custom prompt prefix for conditional captioning (BLIP/BLIP-Large only)")
     args = parser.parse_args()
 
     # Suppress TQDM and transformers logging if not text output
@@ -51,7 +52,7 @@ def main():
             return 1
         results = []
         for img_path in image_paths:
-            caption = service.caption_image_path(img_path, show=args.show)
+            caption = service.caption_image_path(img_path, show=args.show, prompt=args.prompt_prefix)
             results.append({"image": img_path, "model": args.model, "caption": caption})
         if args.format == "json":
             import json
@@ -73,7 +74,7 @@ def main():
         print(f"Failed to initialize image captioning service: {e}")
         return 1
 
-    caption = service.caption_image_path(args.image, show=args.show)
+    caption = service.caption_image_path(args.image, show=args.show, prompt=args.prompt_prefix)
     if args.format == "json":
         import json
         print(json.dumps({
