@@ -67,6 +67,15 @@ if [ -z "$VIRTUAL_ENV" ]; then
   fi
 fi
 
+# if needed, install tcl-tk via brew
+if ! command -v tcl-tk &> /dev/null && command -v brew &> /dev/null; then
+    echo "Installing tcl-tk via Homebrew..."
+    brew install tcl-tk
+elif ! command -v tcl-tk &> /dev/null; then
+    echo "Installing tcl-tk via pip for this user..."
+    pip3 install --user tcl-tk
+fi
+
 # Install NumPy 1.26.4 first (critical for compatibility)
 echo "Installing NumPy 1.26.4..."
 uv pip install numpy==1.26.4
